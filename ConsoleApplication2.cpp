@@ -30,78 +30,47 @@ struct LE {
 	nodo<T>* head = nullptr;
 	void add(T v);
 	void del(T v);
-	bool find(T v, nodo<T>* &pos);
+	bool find(T v, nodo<T>*& pos);
 	void print();
 };
 
 template <class T, class O>
 void LE<T, O>::add(T v) {
-	nodo<T>* p = head;
-	if (find(v, p)) {
-		cout << p->valor << " elemento repetido" << endl;
-		return;
-	}
-	else {
-		if (head == nullptr) {
-			head = new nodo<T>(v);
+	nodo<T>* p;
+	if (!find(v, p)) {
+		if (p == nullptr) {
+			head = new nodo<T>(v, head);
 		}
 		else {
-			O op;					
-			p = head;
-			nodo<T>* q = new nodo<T>(v);
-			while (p && op(q->valor, p->valor)) {
-				p = p->next;
-			}
-			if (p == head) {
-				head = q;
-				q->next = p;
-			}
-			else {
-				nodo<T>* prev = head;
-				while (prev->next != p && prev->next) {
-					prev = prev->next;
-				}
-				prev->next = q;
-				q->next = p;
-			}
+			p->next = new nodo<T>(v, p->next);
 		}
+	}
+	else {
+		cout << v << " ya existe" << endl;
 	}
 }
 
 template <class T, class O>
 void LE<T, O>::del(T v) {
-	nodo<T>* p = head;
-	if (!find(v, p)) {
-		cout << v << " no se encontro el elemento" << endl;
+	nodo<T>* p;
+	if (find(v, p)) {
+		nodo<T>* q = p->next;
+		p->next = q->next;
+		delete q;
 	}
 	else {
-		if (p == head) {
-			head = head->next;
-			p->next = p;
-			delete p;
-		}
-		else {
-			nodo<T>* q = head;
-			while (q->next != p) {
-				q = q->next;
-			}
-			q->next = p->next;
-			p->next = p;
-			delete p;
-		}
+		cout << v << " no existe" << endl;
 	}
 }
 
 template <class T, class O>
 bool LE<T, O>::find(T v, nodo<T>*& pos) {
-	while (pos) {
-		if (pos->valor == v) {
-			return true;
-		}
-		else {
-			pos = pos->next;
-		}
-	}
+	O op;
+	pos = NULL;
+	nodo<T>* p = head;
+	for (; p && op(v, p->valor); pos = p, p = p->next);
+	if (p && p->valor == v)
+		return true;
 	return false;
 }
 
@@ -117,9 +86,9 @@ void LE<T, O>::print() {
 }
 
 int main() {
-	/*
+
 	cout << "ascendente int" << endl;
-	LE<int,asc<int>> l1;
+	LE<int, asc<int>> l1;
 	l1.print();
 	l1.add(5);
 	l1.print();
@@ -129,7 +98,11 @@ int main() {
 	l1.print();
 	l1.add(7);
 	l1.print();
-	l1.add(15);
+	l1.del(3);
+	l1.print();
+	l1.del(15);
+	l1.print();
+	/*l1.add(15);
 	l1.print();
 	l1.add(5);
 	l1.print();
@@ -176,7 +149,7 @@ int main() {
 	l2.print();
 	l2.del(2);
 	l2.print();
-	*/
+
 	cout << "ascendente char" << endl;
 	LE<char, asc<char>> l3;
 	l3.print();
@@ -189,6 +162,6 @@ int main() {
 	l3.add('a');
 	l3.print();
 	l3.del('a');
-	l3.print();
+	l3.print();*/
 	return 0;
 }
