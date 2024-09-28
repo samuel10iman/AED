@@ -18,62 +18,93 @@ template <class T>
 struct ls {
 	nodo<T>* head=nullptr;
 	void add(T v);
-	//void del(T v);
+	void del(T v);
 	bool find(T v, nodo<T>*& pos, T*&pos_v);
 	void print();
 };
 
 template<class T>
 void ls<T>::add(T v) {
-    nodo<T>*p;
-	T*p_v;
-	if(!find(v,p,p_v)){
+	nodo<T>*p;
+	T* pv;
+	if(!find(v,p,pv)){
 		cout << "insertar " << v << endl;
 		if(p==nullptr){
 			head=new nodo<T>(head);
 			*(head->valor)=v;
 			head->tam++;
 		}else{
-			if(p->tam!=5){
-				if(p_v>p->top){
-					*(p_v)=v;
-					p->top++;
-					p->tam++;
-				}else{
-					T*tmp=p->top;
-					while(tmp>=p_v){
-						*(tmp+1)=*tmp;
-						tmp--;
-					}
-					*p_v=v;
-					p->top++;
-					p->tam++;
-				}
-			}else{
-				int tmp_v=*(p->top);
+			T vop=*p->top;
+			while(p){
 				T*tmp=p->top;
-				while(tmp>=p_v){
+				while(tmp>=pv){
 					*(tmp+1)=*tmp;
 					tmp--;
 				}
-				*p_v=v;
-				if(!p->next){
-					p->next=new nodo<T>(p->next);
-					*(p->next->valor)=tmp_v;
-					p->next->tam++;
+				*pv=v;
+				if(p->tam==5){
+					if(!p->next){
+						p->next=new nodo<T>(p->next);
+						*(p->next->valor)=vop;
+						p->next->tam++;
+						p=p->next;
+						return;
+					}else{
+						v=vop;
+						p=p->next;
+						pv=p->valor;
+					}
+				}else{
+					p->top++;
+					p->tam++;
+					p=p->next;
 				}
 			}
 		}
 	}else{
-		cout << v <<  " elemento repetido" << endl;
+		cout << v << " repetido" << endl;
 	}
 }
 
-/*
+
 template<class T>
 void ls<T>::del(T v) {
-
-}*/
+	nodo<T>*p;
+	T* pv;
+	if(find(v,p,pv)){
+		cout << "eliminando " << v << endl;
+		T temp;
+		T* tmp=pv;
+		while(p){
+			while(tmp<p->top){
+				*tmp=*(tmp+1);
+				tmp++;
+			}
+			if(!p->next){
+				p->top--;
+				p->tam--;
+				return;
+			}
+			if(p->next->tam==1){
+				if(!p->next){
+					head=nullptr;
+					delete p;
+				}else{
+					*p->top=*p->valor;
+					nodo<T>*q=p->next;
+					p->next=nullptr;
+					delete q;
+				}
+				return;
+			}
+			*p->top=*p->next->valor;
+			tmp=p->next->valor;
+			p=p->next;
+		}
+	}else{
+		cout << "no existe elemento " << v << endl;
+	}
+}
 
 template<class T>
 bool ls<T>::find(T v, nodo<T>*&pos, T*&pos_v) {
@@ -81,33 +112,25 @@ bool ls<T>::find(T v, nodo<T>*&pos, T*&pos_v) {
 	while(pos){
 		pos_v=pos->valor;
 		for(;pos_v <= pos->top && v > *(pos_v);pos_v++);
-		if(v==pos_v){
+		if(v==*pos_v){
 			return true;
 		}else if(pos_v>pos->top){
 			if(!pos->next){
 				return false;
 			}else{
 				pos=pos->next;
+				continue;
 			}
-		}
-	}
-	return false;
-	/*for(;pos;pos=pos->next){
-		pos_v=pos->valor;
-		for(;pos_v <= pos->top && v > *(pos_v);pos_v++);
-		if(v==*(pos_v)){
-			return true;
-		}else if(pos_v>pos->top && !pos->next){
-			return false;
 		}
 		return false;
 	}
-	return false;*/
+	return false;
 }
 
 template<class T>
 void ls<T>::print() {
 	nodo<T>* p = head;
+	cout << "HEAD -> ";
 	while(p){
         cout << "[ ";
 		T*q=p->valor;
@@ -123,14 +146,15 @@ void ls<T>::print() {
         p=p->next;
         cout << "] -> ";
     }
+	cout << " NULL" << endl;
 }
 
 int main() {
 	ls<int>l1;
 	l1.print();
-    l1.add(5);
+    l1.add(9);
 	l1.print();
-	l1.add(7);
+	l1.add(8);
 	l1.print();
 	l1.add(3);
 	l1.print();
@@ -138,9 +162,33 @@ int main() {
 	l1.print();
 	l1.add(0);
 	l1.print();
-	l1.add(2);
+	l1.add(4);
 	l1.print();
 	l1.add(-1);
 	l1.print();
+	l1.add(2);
+	l1.print();
+	l1.add(7);
+	l1.print();
+	l1.add(10);
+	l1.print();
+	l1.del(10);
+	l1.print();
+	l1.del(7);
+	l1.print();
+	l1.del(2);
+	l1.print();
+	l1.del(0);
+	l1.print();
+	l1.del(3);
+	l1.print();
+	/*l1.del(8);
+	l1.print();
+	l1.del(9);
+	l1.print();
+	l1.del(6);
+	l1.print();
+	l1.del(3);
+	l1.print();*/
 	return 0;
 }
